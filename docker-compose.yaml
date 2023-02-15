@@ -1,0 +1,30 @@
+version: "2"
+networks:
+  keycloak:
+    driver: bridge
+services:
+  keycloak_psql:
+    image: "postgres"
+    container_name: "keycloak_psql"
+    networks:
+      - keycloak
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_DB=keycloak
+      - POSTGRES_PASSWORD=password
+  keycloak:
+    image: jboss/keycloak
+    container_name: "keycloak"
+    networks:
+      - keycloak
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_USER=keycloak
+      - DB_PASSWORD=password
+      - DB_ADDR=keycloak_psql
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - PROXY_ADDRESS_FORWARDING=true
+    depends_on:
+      - keycloak_psql
